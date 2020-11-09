@@ -1,5 +1,6 @@
 import Appointment from "./AppointmetClass.js";
 import UI from "./UIClass.js";
+import { createDB, DB } from "./DB.js";
 const petNameInput = document.querySelector("#mascota");
 const petOwnerInput = document.querySelector("#propietario");
 const petOwnerPhoneNumberInput = document.querySelector("#telefono");
@@ -10,11 +11,17 @@ const petSymptomsInput = document.querySelector("#sintomas");
 const form = document.querySelector("#nueva-cita");
 let editing;
 
+window.onload = () => {
+  eventListeners();
+  // indexedDB.deleteDatabase("appointments").onsuccess = function () {
+  //   console.log("Delete OK");
+  // };
+  createDB();
+};
+
 const appointment = new Appointment();
+export const ui = new UI();
 
-const ui = new UI();
-
-eventListeners();
 function eventListeners() {
   petNameInput.addEventListener("input", dataAppointment);
   petOwnerInput.addEventListener("input", dataAppointment);
@@ -63,23 +70,44 @@ function addNewAppointment(e) {
   }
   if (editing) {
     appointment.editAppointment({ ...appointmentObj });
-    ui.showAlert("Editado correctamente.");
 
-    form.querySelector('button[type="submit"]').textContent = "Crear cita";
+    const transaction = DB.transaction(["appointments"], "readwrite");
 
-    editing = false;
+    const objectStore = transaction.objectStore("appointments");
+
+    objectStore.put(appointmentObj);
+    transaction.oncomplete = () => {
+      ui.showAlert("Editado correctamente.");
+
+      form.querySelector('button[type="submit"]').textContent = "Crear cita";
+
+      editing = false;
+    };
+
+    transaction.onerror = function () {
+      console.log("Hubo un error!");
+    };
   } else {
     appointmentObj.id = Date.now();
 
     appointment.addAppointment({ ...appointmentObj });
 
-    ui.showAlert("Se agregó correctamente.");
+    const transaction = DB.transaction(["appointments"], "readwrite");
+
+    const objectStore = transaction.objectStore("appointments");
+
+    objectStore.add(appointmentObj);
+
+    transaction.oncomplete = () => {
+      console.log("cita agregada");
+      ui.showAlert("Se agregó correctamente.");
+    };
   }
 
   form.reset();
   resetAppointmentObj();
 
-  ui.buildHTMLAppointments(appointment);
+  ui.buildHTMLAppointments();
 }
 
 function resetAppointmentObj() {
@@ -92,9 +120,18 @@ function resetAppointmentObj() {
 }
 
 export function deleteAppoint(id) {
-  appointment.deleteAppointment(id);
-  ui.showAlert("La cita se eliminó correctamente.");
-  ui.buildHTMLAppointments(appointment);
+  const transaction = DB.transaction(["appointments"], "readwrite");
+  const objectStore = transaction.objectStore("appointments");
+  objectStore.delete(id);
+
+  transaction.oncomplete = function () {
+    ui.showAlert("La cita se eliminó correctamente.");
+    ui.buildHTMLAppointments();
+  };
+
+  transaction.onerror = function () {
+    ui.showAlert("Hubo un error, por favor intentelo nuevamente.");
+  };
 }
 
 export function editAppoint(appoint) {
