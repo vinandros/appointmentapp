@@ -1,5 +1,6 @@
 import React from "react";
 import Alert from "./Alert";
+import { v4 as uuidv4 } from "uuid";
 
 const Form = ({
   setAppointmentsData,
@@ -12,19 +13,12 @@ const Form = ({
   const [appointmentData, setAppointmentData] = React.useState({});
   const [error, setError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
-  const [id, setId] = React.useState(0);
   const handleChange = (e) => {
     setAppointmentData({
       ...appointmentData,
       [e.target.name]: e.target.value.trim(),
     });
   };
-
-  React.useEffect(() => {
-    if (appointmentsData.length !== 0) {
-      setId(appointmentsData[appointmentsData.length - 1].id + 1);
-    }
-  }, [appointmentsData]);
 
   React.useEffect(() => {
     setAppointmentData(appointmentEditing);
@@ -54,8 +48,10 @@ const Form = ({
       }, 3000);
       setAppointmentEditing({});
     } else {
-      setAppointmentsData([...appointmentsData, { id, ...appointmentData }]);
-      setId(id + 1);
+      setAppointmentsData([
+        ...appointmentsData,
+        { id: uuidv4(), ...appointmentData },
+      ]);
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
