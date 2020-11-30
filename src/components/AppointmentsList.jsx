@@ -24,9 +24,6 @@ const AppointmentsList = ({
   return (
     <div className="p-3 p-md-5">
       <h3 className="py-2">Appointments List:</h3>
-      {appointmentsData.length == 0 && (
-        <h6 className="text-muted mt-2">No appointments get.</h6>
-      )}
       <div className="my-4">
         {appointmentsData.reverse().map((appointment) => (
           <Appointment
