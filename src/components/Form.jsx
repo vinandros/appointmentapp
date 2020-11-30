@@ -1,6 +1,7 @@
 import React from "react";
 import Alert from "./Alert";
 import { v4 as uuidv4 } from "uuid";
+import PropTypes from "prop-types";
 
 const Form = ({
   setAppointmentsData,
@@ -176,6 +177,15 @@ const Form = ({
       </form>
     </div>
   );
+};
+
+Form.propTypes = {
+  setAppointmentsData: PropTypes.func.isRequired,
+  appointmentsData: PropTypes.array.isRequired,
+  setEditing: PropTypes.func.isRequired,
+  editing: PropTypes.bool.isRequired,
+  appointmentEditing: PropTypes.object.isRequired,
+  setAppointmentEditing: PropTypes.func.isRequired,
 };
 
 export default Form;

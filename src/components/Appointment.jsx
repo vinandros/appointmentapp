@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const Appointment = ({ appointmentData, handleDelete, handleEdit }) => {
   return (
@@ -33,6 +34,12 @@ const Appointment = ({ appointmentData, handleDelete, handleEdit }) => {
       </div>
     </div>
   );
+};
+
+Appointment.propTypes = {
+  appointmentData: PropTypes.object.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  handleEdit: PropTypes.func.isRequired,
 };
 
 export default Appointment;

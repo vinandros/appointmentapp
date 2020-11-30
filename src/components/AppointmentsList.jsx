@@ -1,5 +1,6 @@
 import React from "react";
 import Appointment from "./Appointment";
+import PropTypes from "prop-types";
 
 const AppointmentsList = ({
   appointmentsData,
@@ -38,6 +39,13 @@ const AppointmentsList = ({
       </div>
     </div>
   );
+};
+
+AppointmentsList.propTypes = {
+  appointmentsData: PropTypes.array.isRequired,
+  setAppointmentsData: PropTypes.func.isRequired,
+  setAppointmentEditing: PropTypes.func.isRequired,
+  setEditing: PropTypes.func.isRequired,
 };
 
 export default AppointmentsList;
